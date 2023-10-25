@@ -81,7 +81,7 @@ class CodeFingerprint:
         removing boilerplate.
     """
     def __init__(self, file, k, win_size, boilerplate=None, filter=True,
-                 language=None, fp=None, encoding: str = "utf-8"):
+                 language=None, fp=None, encoding: str = "utf-8", only_corresponding_ex=True):
         if boilerplate is None:
             boilerplate = []
         if fp is not None:
@@ -120,9 +120,13 @@ class CodeFingerprint:
         self.hashes = hashes
         self.hash_idx = idx
         self.k = k
+        self.only_corresponding_ex = only_corresponding_ex
         self.token_coverage = get_token_coverage(idx, k, len(filtered_code))
 
 def compare_files(file1_data, file2_data):
+    # print('File 1: {}'.format(file1_data.filename))
+    # print('File 2: {}'.format(file2_data.filename))
+    
     """Computes the overlap between two CodeFingerprint objects
     using the generic methods from copy_detect.py. Returns the
     number of overlapping tokens and two tuples containing the
@@ -252,7 +256,9 @@ class CopyDetector:
                  same_name_only=False, ignore_leaf=False, autoopen=True,
                  disable_filtering=False, force_language=None,
                  truncate=False, out_file="./report.html", silent=False,
+                 only_corresponding_ex = True,
                  encoding: str = "utf-8"):
+        self.only_corresponding_ex = only_corresponding_ex
         conf_args = locals()
         conf_args = {
             key: val
@@ -419,6 +425,13 @@ class CopyDetector:
                  disable=self.conf.silent)
         ):
             for j, ref_f in enumerate(self.ref_files):
+                # print('Heheheheh 1: {}'.format(test_f))
+                # print('Heheheheh 2: {}'.format(ref_f))
+                if(self.only_corresponding_ex == True):
+                    if(test_f.split('\\')[-2] != ref_f.split('\\')[-2]):
+                        # print('TMPTMP {}'.format(ref_f.split('\\')[-2]))
+                        continue
+                
                 if (test_f not in self.file_data
                         or ref_f not in self.file_data
                         or test_f == ref_f

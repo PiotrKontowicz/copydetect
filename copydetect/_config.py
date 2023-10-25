@@ -28,6 +28,7 @@ class CopydetectConfig:
     out_file: str = "./report.html"
     silent: bool = False
     encoding: str = "utf-8"
+    only_corresponding_ex: bool = True
 
     window_size: int = field(init=False, default=guarantee_t - noise_t + 1)
     short_names: ClassVar[Dict[str, str]] = {
